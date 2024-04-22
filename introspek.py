@@ -1,11 +1,18 @@
 import inspect
 
 
-def introspection_info(obj):
-    obj = 6
-    print(f'на часах {obj}')
+
+def introspection_info(number_info):
+    print(number_info)
+
+number_info = {'a': 'b', 'c': 'd'}
+introspection_info(number_info)
+
+
+
 
 print(type(introspection_info))
+print(type(number_info))
 
 print(dir(introspection_info))
 print(hasattr(introspection_info, 'obj'))
