@@ -8,10 +8,6 @@ def introspection_info(number_info):
 number_info = {'a': 'b', 'c': 'd'}
 introspection_info(number_info)
 
-
-
-
-print(type(introspection_info))
 print(type(number_info),type(introspection_info), dir(introspection_info),hasattr(introspection_info, 'obj'), callable(introspection_info),
       isinstance(introspection_info, str))
 
@@ -25,4 +21,7 @@ class Inospection_info(Objects):
 
 print(issubclass(Inospection_info, Objects), issubclass(Objects, Inospection_info))
 
-
+def introspection_info(number_info):
+    print(number_info)
+    dictionary = {'type': type(introspection_info()), 'callable': callable(introspection_info()), 'hassattr': hasattr(number_info, 'get')}
+    return dictionary
