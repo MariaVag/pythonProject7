@@ -1,61 +1,48 @@
-import requests as rq
-import logging
-
-logger = logging.getLogger('RequestsLogger')
-
-sites = ['https://www.youtube.com/', 'https://instagram.com', 'https://wikipedia.org', 'https://yahoo.com',
-         'https://yandex.ru', 'https://whatsapp.com', 'https://twitter.com', 'https://amazon.com', 'https://tiktok.com',
-         'https://www.ozon.ru']
-
-logging.basicConfig(level=logging.INFO)
-
-error_handler = logging.FileHandler('success_responses.log',
-                    mode='w',
-                    encoding='UTF8',
-                    )
-error_handler.setLevel(logging.ERROR)
+import csv
+import re
 
 
-error_handler2 = logging.FileHandler('bad_responses.log',
-                    mode='w',
-                    encoding='UTF8')
-error_handler2.setLevel(logging.INFO)
+def write_holiday_cities(first_letter):
+    have_visit = set()
+    wish_visit = set()
+    list_travel = []
+
+
+    with (open('travel-notes.csv', 'r', newline='', encoding='UTF8') as file_read):
+        reader = csv.reader(file_read)
+
+        for list in reader:
+
+            if list[0].startswith(first_letter):
+                param = r"\w+(?:(?:[^;]*\[[^][]*])+[^;]*|[^;']+)"
+                list_travel.append(list)
+
+                city = re.findall(param, list[1])
+                for cities in city:
+                    have_visit.add(cities)
+                print(have_visit)
+
+                city = re.findall(param, list[2])
+                for cities in city:
+                    wish_visit.add(cities)
+                    print(wish_visit)
+
+
+    all_cities = have_visit.union(wish_visit)
+    don_visit = (all_cities.difference(have_visit))
+    next_visit = sorted(don_visit)[0]
+
+    with (open('holiday.csv', 'w', newline='', encoding='UTF8') as file_out):
+        w = csv.writer(file_out)
+        w.writerow([f' Города,в которых студенты с именем на {first_letter} уже были '.join(sorted(have_visit))])
+        w.writerow(['Города, которые студенты хотят посетить:'.join(sorted(wish_visit))])
+        w.writerow(['Посетят следующим:', next_visit])
+        w.writerow(['В этих городах студенты еще не были'.join(sorted(don_visit))])
+
+
+letter = 'Lisa'
+city_letter = write_holiday_cities(letter)
 
 
 
-error_handler3 = logging.FileHandler('blocked_responses.log',
-                    mode='w',
-                    encoding='UTF8')
-error_handler3.setLevel(logging.WARNING)
-
-
-
-logger.error('ERROR')
-logger.info('INFO')
-logger.warning('WARNING')
-
-formatter = logging.Formatter('%(levelname)s: %(message)s')
-error_handler.setFormatter(formatter)
-error_handler2.setFormatter(formatter)
-error_handler3.setFormatter(formatter)
-
-logger.addHandler(error_handler)
-logger.addHandler(error_handler2)
-logger.addHandler(error_handler3)
-
-
-for site in sites:
-    try:
-        response = rq.get(site, timeout=3)
-        print(response)
-        if response.status_code == 200:
-            logger.info(f'INFO: {site} {response.status_code}')
-        else:
-            logger.warning(f'WARNING: {site} {response.status_code}')
-    except Exception as e:
-        logger.error(f'ERROR: {site}. Exception: {str(e)}')
-
-logging.info('wow')
-for handler in logger.handlers:
-    handler.close()
 
